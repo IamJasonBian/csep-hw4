@@ -1,4 +1,4 @@
-name: cse446
+name: cse446-hw4
 channels:
   - conda-forge
   - pytorch
