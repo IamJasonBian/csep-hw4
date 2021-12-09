@@ -37,7 +37,20 @@ def cluster_data(data: np.ndarray, centers: np.ndarray) -> np.ndarray:
         np.ndarray: Array of integers of shape (n,), with each entry being in range {0, 1, 2, ..., k - 1}.
             Entry j at index i should mean that j^th center is the closest to data[i] datapoint.
     """
-    raise NotImplementedError("Your Code Goes Here")
+    n = data.shape[0]
+    k = center.shape[0]
+
+
+    distances = np.zeros(n, k, dtype=np.float64)
+
+    for index, center in enumerate(centers):
+        distances[:, index] = np.sum(np.sum((data - center)**2, axis=1))
+
+
+    #Determine nearest cluster
+    nearest_center = np.argmin(distances, axis=1)
+
+    return nearest_center
 
 
 @problem.tag("hw4-A")
