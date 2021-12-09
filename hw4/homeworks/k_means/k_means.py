@@ -21,8 +21,15 @@ def calculate_centers(
     Returns:
         np.ndarray: Array of shape (num_centers, d) containing new centers.
     """
-    raise NotImplementedError("Your Code Goes Here")
+    new_centroids = np.zeros((num_centers, data.shape[1]))
+    for j in range(0, num_centers):
 
+        # compute centroids
+        J = np.where(classifications == j)
+        data_C = data[J]
+        new_centroids[j] = data_C.mean(axis = 0)
+
+    return new_centroids
 
 @problem.tag("hw4-A")
 def cluster_data(data: np.ndarray, centers: np.ndarray) -> np.ndarray:
@@ -40,12 +47,12 @@ def cluster_data(data: np.ndarray, centers: np.ndarray) -> np.ndarray:
     n = data.shape[0]
     k = centers.shape[0]
 
-
     distances = np.zeros((n, k), dtype=float)
 
-    for index, center in enumerate(centers):
-        distance = np.sum((data - center)**2, axis=1)
-        distances[:, index] = distance
+    for d, data_v in enumerate(data):
+        for centroid, centroid_v in enumerate(centers):
+            distance = np.linalg.norm(data_v - centroid_v)**2
+            distances[d, centroid] = distance
 
     #Determine nearest cluster
     nearest_center = np.argmin(distances, axis=1)
@@ -65,7 +72,17 @@ def calculate_error(data: np.ndarray, centers: np.ndarray) -> float:
     Returns:
         float: Single value representing mean objective function of centers on a provided dataset.
     """
-    raise NotImplementedError("Your Code Goes Here")
+    n = data.shape[0]
+    k = centers.shape[0]
+
+    sse = 0
+    for i, data_v in enumerate(data):
+        for j, centroid_v in enumerate(centers):
+            sse += np.sum(np.power(data[i, :] - centers[j], 2))
+
+    mse = sse/(k * n)
+
+    return mse
 
 
 @problem.tag("hw4-A")
@@ -87,4 +104,32 @@ def lloyd_algorithm(
     Note:
         - For initializing centers please use the first `num_centers` data points.
     """
-    raise NotImplementedError("Your Code Goes Here")
+
+    I = np.random.choice(data.shape[0], num_centers)
+    centroids = data[I, :]
+    classifications = np.zeros(data.shape[0], dtype=np.int64)
+
+    loss = 0
+    max_iter = 300
+    loss = 0
+    tolerance = 10e-3
+
+    for m in range(0, max_iter):
+        # Compute the classifications
+
+        classifications = cluster_data(data, centroids)
+        new_centroids = calculate_centers(data, classifications, num_centers)
+        new_loss = calculate_error(data, new_centroids)
+
+        # Stopping criterion
+        if np.abs(loss - new_loss) < tolerance:
+            return new_centroids, classifications, new_loss
+
+        centroids = new_centroids
+        loss = new_loss
+
+        print(loss)
+
+    print("Failed to converge!")
+
+    return centroids, classifications, loss

@@ -23,7 +23,7 @@ def main():
         x_train to x_train[:10000]. CHANGE IT BACK before submission.
     """
     (x_train, _), (x_test, _) = load_dataset("mnist")
-    raise NotImplementedError("Your Code Goes Here")
+    centroids, classifications, loss = lloyd_algorithm(x_train, 10)
 
 
 if __name__ == "__main__":
