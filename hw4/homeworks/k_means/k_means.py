@@ -51,7 +51,7 @@ def cluster_data(data: np.ndarray, centers: np.ndarray) -> np.ndarray:
 
     for d, data_v in enumerate(data):
         for centroid, centroid_v in enumerate(centers):
-            distance = np.linalg.norm(data_v - centroid_v)**2
+            distance = np.linalg.norm(data_v - centroid_v)
             distances[d, centroid] = distance
 
     #Determine nearest cluster
@@ -75,12 +75,15 @@ def calculate_error(data: np.ndarray, centers: np.ndarray) -> float:
     n = data.shape[0]
     k = centers.shape[0]
 
-    sse = 0
-    for i, data_v in enumerate(data):
-        for j, centroid_v in enumerate(centers):
-            sse += np.sum(np.power(data[i, :] - centers[j], 2))
+    nearest_center = cluster_data(data, centers)
 
-    mse = sse/(k * n)
+    se = 0
+    for data_v, center_idx in zip(data,nearest_center):
+        center = centers[int(center_idx)]
+        distance = np.linalg.norm(data_v - center)
+        se += distance
+
+    mse = se/n
 
     return mse
 
@@ -110,9 +113,8 @@ def lloyd_algorithm(
     classifications = np.zeros(data.shape[0], dtype=np.int64)
 
     loss = 0
-    max_iter = 300
+    max_iter = 50
     loss = 0
-    tolerance = 10e-3
 
     for m in range(0, max_iter):
         # Compute the classifications
@@ -122,7 +124,7 @@ def lloyd_algorithm(
         new_loss = calculate_error(data, new_centroids)
 
         # Stopping criterion
-        if np.abs(loss - new_loss) < tolerance:
+        if np.max(np.abs(centroids - new_centroids)) < epsilon:
             return new_centroids, classifications, new_loss
 
         centroids = new_centroids

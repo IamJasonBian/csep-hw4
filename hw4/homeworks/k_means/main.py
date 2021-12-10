@@ -23,7 +23,16 @@ def main():
         x_train to x_train[:10000]. CHANGE IT BACK before submission.
     """
     (x_train, _), (x_test, _) = load_dataset("mnist")
-    centroids, classifications, loss = lloyd_algorithm(x_train, 10)
+    centroids, classifications, loss = lloyd_algorithm(x_train[:1000], 4)
+
+    print("Starting Test")
+    centroids, classifications, loss = lloyd_algorithm(x_test, 4)
+
+    #centroids_img = []
+    #for i in centroids:
+     #   centroids_img.append(i.reshape(28,28))
+
+    #print("Done")
 
 
 if __name__ == "__main__":
