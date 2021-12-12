@@ -122,15 +122,17 @@ def lloyd_algorithm(
         classifications = cluster_data(data, centroids)
         new_centroids = calculate_centers(data, classifications, num_centers)
         new_loss = calculate_error(data, new_centroids)
+        obj_func = np.abs(centroids - new_centroids)
 
         # Stopping criterion
-        if np.max(np.abs(centroids - new_centroids)) < epsilon:
+        if np.max(obj_func) < epsilon:
             return new_centroids, classifications, new_loss
 
         centroids = new_centroids
         loss = new_loss
 
         print(loss)
+
 
     print("Failed to converge!")
 

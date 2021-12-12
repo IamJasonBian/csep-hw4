@@ -20,8 +20,9 @@ def reconstruct_demean(uk: np.ndarray, demean_data: np.ndarray) -> np.ndarray:
             Each row should correspond to row in demean_data,
             but first compressed and then reconstructed using uk eigenvectors.
     """
-    raise NotImplementedError("Your Code Goes Here")
 
+    PC = uk.T.dot(demean_data.T)
+    return PC.T.dot(uk.T)
 
 @problem.tag("hw4-A")
 def reconstruction_error(uk: np.ndarray, demean_data: np.ndarray) -> float:
@@ -34,8 +35,10 @@ def reconstruction_error(uk: np.ndarray, demean_data: np.ndarray) -> float:
     Returns:
         float: Squared L-2 error on reconstructed data.
     """
-    raise NotImplementedError("Your Code Goes Here")
+    reconstructed = reconstruct_demean(uk, demean_data)
+    error = np.linalg.norm(demean_data - reconstructed)
 
+    return error
 
 @problem.tag("hw4-A")
 def calculate_eigen(demean_data: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
@@ -50,7 +53,11 @@ def calculate_eigen(demean_data: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
             1. Eigenvalues array with shape (d,)
             2. Matrix with eigenvectors as columns with shape (d, d)
     """
-    raise NotImplementedError("Your Code Goes Here")
+    cov = np.transpose(demean_data).dot(demean_data)
+    cov = cov/demean_data.shape[0]
+    eig = np.linalg.eig(cov)
+
+    return eig
 
 
 @problem.tag("hw4-A", start_line=2)
@@ -58,6 +65,7 @@ def main():
     """
     Main function of PCA problem. It should load data, calculate eigenvalues/-vectors,
     and then answer all questions from problem statement.
+
 
     Part A:
         - Report 1st, 2nd, 10th, 30th and 50th largest eigenvalues
@@ -79,7 +87,14 @@ def main():
     """
     (x_tr, y_tr), (x_test, _) = load_dataset("mnist")
 
-    raise NotImplementedError("Your Code Goes Here")
+    x_demean = x_tr - x_tr.mean()
+    calculate_eigen(x_demean)
+    eig = calculate_eigen(x_demean)
+    ls = [eig[0][1], eig[0][2], eig[0][10], eig[0][30], eig[0][50]]
+
+    print("1 to 50 EigenValues are:")
+    print(["Eigen value is: %5f" % (i) for i in ls])
+    print("Eigen Sum is : %5f" % (eig[0].sum()))
 
 
 if __name__ == "__main__":
