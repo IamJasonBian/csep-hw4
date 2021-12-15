@@ -36,7 +36,7 @@ def reconstruction_error(uk: np.ndarray, demean_data: np.ndarray) -> float:
         float: Squared L-2 error on reconstructed data.
     """
     reconstructed = reconstruct_demean(uk, demean_data)
-    error = np.linalg.norm(demean_data - reconstructed)
+    error = np.sum((demean_data - reconstructed)**2)/demean_data.shape[0]
 
     return error
 
@@ -95,6 +95,25 @@ def main():
     print("1 to 50 EigenValues are:")
     print(["Eigen value is: %5f" % (i) for i in ls])
     print("Eigen Sum is : %5f" % (eig[0].sum()))
+
+    lamb = np.real(eig[0])
+    for k in range(1, 100):
+        #create uk from eig
+        uk = np.real(eig[1][:,:k])
+        lamb_k = np.real(eig[0][:k])
+        val = 1 - np.sum(lamb_k)/np.sum(lamb)
+
+        x_tr_demean = x_tr - x_tr.mean()
+        demean_data = reconstruct_demean(uk, x_tr_demean)
+        x_tr_error = reconstruction_error(uk, demean_data)
+
+        x_test_demean = x_test - x_test.mean()
+        demean_data = reconstruct_demean(uk, x_test_demean)
+        x_test_error = reconstruction_error(uk, demean_data)
+
+        print(x_tr_error)
+
+
 
 
 if __name__ == "__main__":
