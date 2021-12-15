@@ -97,10 +97,14 @@ def main():
     print("Eigen Sum is : %5f" % (eig[0].sum()))
 
     lamb = np.real(eig[0])
+
+    """
+    
+
     for k in range(1, 100):
         #create uk from eig
-        uk = np.real(eig[1][:,:k])
-        lamb_k = np.real(eig[0][:k])
+        uk = np.real(eig[1][:,0:k])
+        lamb_k = np.real(eig[0][0:k])
         val = 1 - np.sum(lamb_k)/np.sum(lamb)
 
         x_tr_demean = x_tr - x_tr.mean()
@@ -111,10 +115,43 @@ def main():
         demean_data = reconstruct_demean(uk, x_test_demean)
         x_test_error = reconstruction_error(uk, demean_data)
 
-        print(x_tr_error)
+        print(x_test_error)
+    
+
+
+    for k in range(10):
+        vec = u_10[:, k].reshape(28, 28)
+        plt.imshow(vec)
+        plt.show()
+    """
 
 
 
+    #idx 5 is 2
+    #idx 13 is 6
+    #idx 29 is 7
+
+    def reconstruction(k):
+        u = np.real(eig[1][:, 0:k])
+        x_tr_demean = x_tr - x_tr.mean()
+        reconstructed = reconstruct_demean(u, x_tr_demean)
+        return reconstructed
+
+    def show_img(idx, data):
+        data = data[idx, :].reshape(28, 28)
+        plt.imshow(data)
+        plt.show()
+
+    def show_img_2_6_7(data):
+        show_img(5, data)
+        show_img(13, data)
+        show_img(29, data)
+
+    for k in [5, 15, 40, 100]:
+        data = reconstruction(k)
+        show_img_2_6_7(data)
+
+    print("End")
 
 if __name__ == "__main__":
     main()
